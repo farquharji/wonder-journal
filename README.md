@@ -11,28 +11,16 @@ A UI-first prototype that presents answers as ink writing onto a parchment book 
 - Textured parchment background with serif typography
 - Calm, scholarly aesthetic
 
-## Running the Project
-
-### Backend
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-The backend runs on `http://localhost:3000`
-
-### Frontend
-
-In a separate terminal:
+## Running the Project Locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-The frontend runs on `http://localhost:5173` (or the port Vite assigns)
+The app runs on `http://localhost:5173` (or the port Vite assigns)
+
+The API endpoint at `/api/ask` is handled by Vercel serverless functions in development.
 
 ## Usage
 
@@ -57,7 +45,7 @@ Each answer contains:
 
 ## Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete instructions on deploying to wonderjournal.org using Railway (backend) and Vercel (frontend).
+The entire app (frontend + backend API) deploys to Vercel. See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete instructions on deploying to wonderjournal.org.
 
 ## Design Principles
 

@@ -1,129 +1,105 @@
 # Deploying The Living Book to wonderjournal.org
 
-This guide walks through deploying The Living Book to production using Railway (backend) and Vercel (frontend).
+This guide walks through deploying The Living Book to production using Vercel (frontend + backend).
+
+## Architecture
+
+The entire app is hosted on Vercel:
+- **Frontend**: React app built with Vite
+- **Backend**: Serverless function at `/api/ask`
+
+This is simpler than splitting frontend/backend across different services.
 
 ## Prerequisites
 
-- GitHub account
-- Railway account (https://railway.app)
+- GitHub account (already done ✓)
 - Vercel account (https://vercel.com)
 - Access to wonderjournal.org domain DNS settings
 
-## Step 1: Push Code to GitHub
+## Deployment Steps
 
-1. Initialize git repository (if not already done):
-```bash
-cd /Users/guy/living-book
-git init
-git add .
-git commit -m "Initial commit: The Living Book"
-```
+### Step 1: Push to GitHub ✓
 
-2. Create a new repository on GitHub (https://github.com/new)
-   - Name it something like "wonder-journal" or "living-book"
-   - Don't initialize with README (we already have one)
+Already completed! Your code is at: https://github.com/farquharji/wonder-journal
 
-3. Push to GitHub:
-```bash
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-git branch -M main
-git push -u origin main
-```
+### Step 2: Deploy to Vercel
 
-## Step 2: Deploy Backend to Railway
-
-1. Go to https://railway.app and sign in
-2. Click "New Project"
-3. Select "Deploy from GitHub repo"
-4. Choose your repository
-5. Configure the service:
-   - **Root Directory**: `backend`
-   - Railway will auto-detect Node.js and use `npm start`
-
-6. Add environment variables in Railway dashboard:
-   - Go to your service → Variables tab
-   - Add: `FRONTEND_URL` = `https://wonderjournal.org`
-   - (PORT is automatically set by Railway)
-
-7. Deploy and note your Railway URL:
-   - It will be something like: `https://your-app.up.railway.app`
-   - This is your backend API URL
-
-## Step 3: Deploy Frontend to Vercel
-
-1. Go to https://vercel.com and sign in
-2. Click "Add New..." → "Project"
-3. Import your GitHub repository
+1. Go to https://vercel.com and sign in with GitHub
+2. Click **"Add New..."** → **"Project"**
+3. Find and import **`farquharji/wonder-journal`**
 4. Configure the project:
    - **Framework Preset**: Vite
    - **Root Directory**: `./` (leave as root)
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `dist` (auto-detected)
+5. Click **"Deploy"**
 
-5. Add environment variable:
-   - Click "Environment Variables"
-   - Add: `VITE_API_URL` = `https://your-app.up.railway.app` (your Railway URL from Step 2)
+Vercel will:
+- Build your React frontend
+- Deploy the `/api/ask` serverless function
+- Give you a URL like `wonder-journal-xyz.vercel.app`
 
-6. Click "Deploy"
+### Step 3: Configure Custom Domain
 
-7. Once deployed, note your Vercel URL (something like `your-app.vercel.app`)
-
-## Step 4: Configure Custom Domain
-
-### On Vercel (for wonderjournal.org):
-
-1. Go to your Vercel project → Settings → Domains
+1. In Vercel, go to your project → **Settings** → **Domains**
 2. Add domain: `wonderjournal.org`
-3. Also add: `www.wonderjournal.org`
-4. Vercel will show you DNS records to add
+3. Also add: `www.wonderjournal.org` (optional)
+4. Vercel will show you the DNS records you need
 
-### In your domain registrar's DNS settings:
+### Step 4: Update DNS
 
-Add these records for wonderjournal.org:
+In your domain registrar where you bought wonderjournal.org:
 
-**For root domain:**
+**For root domain (wonderjournal.org):**
 - Type: `A`
 - Name: `@`
-- Value: `76.76.21.21` (Vercel's IP)
+- Value: `76.76.21.21`
 
-**For www subdomain:**
+**For www subdomain (optional):**
 - Type: `CNAME`
 - Name: `www`
 - Value: `cname.vercel-dns.com`
 
-**Note**: DNS changes can take up to 48 hours to propagate, but usually take 5-30 minutes.
+**Note**: DNS changes can take 5-30 minutes (sometimes up to 48 hours).
 
-## Step 5: Update Backend CORS
+### Step 5: Test
 
-After your domain is working:
-
-1. Go back to Railway dashboard
-2. Update the `FRONTEND_URL` environment variable:
-   - Change from temporary Vercel URL to: `https://wonderjournal.org`
-3. Redeploy the backend
+1. Wait for DNS to propagate
+2. Visit https://wonderjournal.org
+3. Ask a question
+4. Watch the ink emerge
 
 ## Verification
 
-1. Visit https://wonderjournal.org
-2. Ask a question
-3. Verify the answer appears with the ink animation
-4. Check browser console for any errors
+Check that everything works:
+- Frontend loads at wonderjournal.org
+- Question submission works
+- Ink animation appears
+- No console errors
+
+You can test the API directly:
+```bash
+curl -X POST https://wonderjournal.org/api/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"test"}'
+```
 
 ## Troubleshooting
 
-**CORS errors:**
-- Make sure Railway's `FRONTEND_URL` matches your domain exactly
-- Check that the backend is deployed and running
-
 **"Failed to fetch" errors:**
-- Verify the `VITE_API_URL` in Vercel points to your Railway backend
-- Check that Railway service is running (green status)
-- Test the backend directly: `https://your-railway-url.up.railway.app/health`
+- Check browser console for details
+- Verify deployment succeeded in Vercel dashboard
+- Check the Functions tab in Vercel to see `/api/ask` logs
 
 **Domain not resolving:**
 - DNS can take time to propagate
-- Verify DNS records are correct in your registrar
-- Use https://dnschecker.org to check propagation
+- Verify DNS records match Vercel's requirements exactly
+- Use https://dnschecker.org to check propagation status
+
+**API not working:**
+- Go to Vercel dashboard → Functions tab
+- Click on `/api/ask` to see logs
+- Check for errors in function execution
 
 ## Future Updates
 
@@ -137,19 +113,24 @@ git commit -m "Your update message"
 git push
 ```
 
-3. Both Vercel and Railway will automatically redeploy from the main branch
+3. Vercel will automatically redeploy (takes 1-2 minutes)
 
 ## Local Development
 
-To run locally after deployment:
+To run locally:
 
 ```bash
-# Terminal 1 - Backend
-cd backend
-npm start
-
-# Terminal 2 - Frontend
+npm install
 npm run dev
 ```
 
-The local frontend will use `http://localhost:3000` for the API (fallback in code).
+The Vite dev server will proxy `/api/*` requests to the serverless functions.
+
+## Customizing the Response
+
+To change what the book writes, edit `/api/ask.js`. Later you can integrate with:
+- OpenAI API
+- Anthropic Claude API
+- Any other LLM service
+
+Just modify the `answer` object structure to return different content.
