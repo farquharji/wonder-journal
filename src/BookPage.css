@@ -9,8 +9,8 @@
 
 .book-page {
   width: 100%;
-  max-width: 800px;
-  min-height: 600px;
+  max-width: 900px;
+  height: 85vh;
   background-color: #f4e8d0;
   background-image:
     repeating-linear-gradient(
@@ -26,8 +26,8 @@
     0 8px 16px rgba(0, 0, 0, 0.1),
     inset 0 0 100px rgba(139, 115, 85, 0.1);
   border-radius: 2px;
-  padding: 4rem 5rem;
   position: relative;
+  overflow: hidden;
 }
 
 .book-page::before {
@@ -42,15 +42,44 @@
     radial-gradient(circle at 80% 70%, rgba(139, 115, 85, 0.05) 0%, transparent 50%);
   pointer-events: none;
   border-radius: 2px;
+  z-index: 1;
 }
 
 .page-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4rem 5rem;
+  scroll-behavior: smooth;
+}
+
+.page-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: rgba(139, 115, 85, 0.1);
+  border-radius: 4px;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 115, 85, 0.3);
+  border-radius: 4px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 115, 85, 0.5);
 }
 
 .question-form {
   margin-bottom: 3rem;
+  position: sticky;
+  top: 0;
+  background: #f4e8d0;
+  padding: 1rem 0;
+  z-index: 10;
 }
 
 .question-input {
@@ -91,34 +120,21 @@
   font-style: italic;
 }
 
-.answer-content {
-  margin-top: 2rem;
-  line-height: 1.8;
+.entry-content {
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.entry-content:last-of-type {
+  border-bottom: none;
 }
 
 .ink-line {
   margin-bottom: 1rem;
   font-family: 'Crimson Text', 'Georgia', serif;
   color: #3e3125;
-  animation: inkEmerge 0.8s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes inkEmerge {
-  0% {
-    opacity: 0;
-    filter: blur(3px);
-    transform: translateY(4px);
-  }
-  50% {
-    opacity: 0.7;
-    filter: blur(1px);
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-  }
+  opacity: 1;
 }
 
 .ink-line-title {
@@ -135,6 +151,7 @@
   margin-bottom: 0.75rem;
   text-align: justify;
   text-indent: 2em;
+  line-height: 1.8;
 }
 
 .ink-line-guidance {
@@ -143,6 +160,7 @@
   text-align: justify;
   padding-left: 1.5rem;
   position: relative;
+  line-height: 1.8;
 }
 
 .ink-line-guidance::before {
@@ -159,5 +177,162 @@
   margin-top: 1.5rem;
   padding-left: 1rem;
   border-left: 2px solid rgba(62, 49, 37, 0.2);
+  line-height: 1.6;
+}
+
+.word-counter {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-family: 'Crimson Text', 'Georgia', serif;
+  font-size: 0.85rem;
+  color: rgba(62, 49, 37, 0.5);
+  background: rgba(244, 232, 208, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+}
+
+/* Bookmark tabs */
+.bookmark-tabs {
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+}
+
+.bookmark-tab {
+  width: 100px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  cursor: pointer;
+  transition: right 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.bookmark-tab:hover {
+  right: calc(var(--right-pos) - 10px) !important;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.bookmark-tab.active {
+  right: calc(var(--right-pos) + 300px) !important;
+  box-shadow: -6px 0 16px rgba(0, 0, 0, 0.4);
+}
+
+.bookmark-label {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  font-size: 1.1rem;
+  color: #f4e8d0;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2rem 0;
+}
+
+/* Bookmark panel */
+.bookmark-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 350px;
+  height: 100%;
+  background: #f4e8d0;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  padding: 2rem;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.bookmark-panel h2 {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  color: #2a1f17;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(139, 115, 85, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.bookmark-action {
+  width: 100%;
+  background: #8b4513;
+  color: #f4e8d0;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-family: 'Crimson Text', 'Georgia', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  transition: background 0.3s ease;
+}
+
+.bookmark-action:hover {
+  background: #704214;
+}
+
+.bookmark-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bookmark-item {
+  padding: 1rem;
+  background: rgba(139, 115, 85, 0.08);
+  border-left: 3px solid #8b4513;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.bookmark-item:hover {
+  background: rgba(139, 115, 85, 0.15);
+  transform: translateX(-4px);
+}
+
+.bookmark-title {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  color: #2a1f17;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.bookmark-date {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  color: rgba(62, 49, 37, 0.6);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.empty-message {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  color: rgba(62, 49, 37, 0.5);
+  font-style: italic;
+  text-align: center;
+  margin-top: 2rem;
   line-height: 1.6;
 }
