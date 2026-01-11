@@ -198,71 +198,72 @@ const BookPage = () => {
               className={`bookmark-tab ${activeBookmark === tab.id ? 'active' : ''}`}
               style={{
                 backgroundColor: tab.color,
-                left: `${100 + (index * 130)}px`,
-                zIndex: activeBookmark === tab.id ? 1000 : 10 + index
+                left: activeBookmark === tab.id ? '0' : `${-80 + (index * 15)}px`,
+                zIndex: activeBookmark === tab.id ? 1000 : index
               }}
               onClick={(e) => handleBookmarkClick(e, tab.id)}
             >
               <span className="bookmark-label">{tab.label}</span>
+
+              <div className="bookmark-content">
+                {tab.id === 'bookmarks' && (
+                  <>
+                    <h2>Bookmarks</h2>
+                    <button onClick={addBookmark} className="bookmark-action">
+                      Bookmark Current Page
+                    </button>
+                    <div className="bookmark-list">
+                      {bookmarks.length === 0 ? (
+                        <p className="empty-message">No bookmarks yet</p>
+                      ) : (
+                        bookmarks.map(bookmark => (
+                          <div
+                            key={bookmark.id}
+                            className="bookmark-item"
+                            onClick={() => scrollToBookmark(bookmark)}
+                          >
+                            <div className="bookmark-title">{bookmark.title}</div>
+                            <div className="bookmark-date">
+                              {bookmark.timestamp.toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {tab.id === 'library' && (
+                  <>
+                    <h2>Library</h2>
+                    <p className="empty-message">Your personal collection of books</p>
+                  </>
+                )}
+
+                {tab.id === 'bookshop' && (
+                  <>
+                    <h2>Bookshop</h2>
+                    <p className="empty-message">Browse and purchase books</p>
+                  </>
+                )}
+
+                {tab.id === 'journal' && (
+                  <>
+                    <h2>Journal</h2>
+                    <p className="empty-message">Reflect on your thoughts and writings</p>
+                  </>
+                )}
+
+                {tab.id === 'letters' && (
+                  <>
+                    <h2>Letters</h2>
+                    <p className="empty-message">Private, ephemeral correspondence</p>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
-
-        {/* Bookmark panels */}
-        {activeBookmark === 'bookmarks' && (
-          <div className="bookmark-panel">
-            <h2>Bookmarks</h2>
-            <button onClick={addBookmark} className="bookmark-action">
-              Bookmark Current Page
-            </button>
-            <div className="bookmark-list">
-              {bookmarks.length === 0 ? (
-                <p className="empty-message">No bookmarks yet</p>
-              ) : (
-                bookmarks.map(bookmark => (
-                  <div
-                    key={bookmark.id}
-                    className="bookmark-item"
-                    onClick={() => scrollToBookmark(bookmark)}
-                  >
-                    <div className="bookmark-title">{bookmark.title}</div>
-                    <div className="bookmark-date">
-                      {bookmark.timestamp.toLocaleDateString()}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeBookmark === 'library' && (
-          <div className="bookmark-panel">
-            <h2>Library</h2>
-            <p className="empty-message">Your personal collection of books</p>
-          </div>
-        )}
-
-        {activeBookmark === 'bookshop' && (
-          <div className="bookmark-panel">
-            <h2>Bookshop</h2>
-            <p className="empty-message">Browse and purchase books</p>
-          </div>
-        )}
-
-        {activeBookmark === 'journal' && (
-          <div className="bookmark-panel">
-            <h2>Journal</h2>
-            <p className="empty-message">Reflect on your thoughts and writings</p>
-          </div>
-        )}
-
-        {activeBookmark === 'letters' && (
-          <div className="bookmark-panel">
-            <h2>Letters</h2>
-            <p className="empty-message">Private, ephemeral correspondence</p>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -221,40 +221,45 @@
 /* Bookmark tabs */
 .bookmark-tabs {
   position: absolute;
-  top: -60px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
-  z-index: 10;
+  height: 100%;
+  z-index: 0;
   pointer-events: none;
 }
 
 .bookmark-tab {
   width: 120px;
-  height: 60px;
+  height: 100%;
   position: absolute;
   top: 0;
   cursor: pointer;
-  transition: top 0.3s ease, box-shadow 0.3s ease, z-index 0s 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease, box-shadow 0.3s ease, z-index 0s 0.3s, width 0.3s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 2rem;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   pointer-events: all;
+  overflow: hidden;
 }
 
-.bookmark-tab:hover {
-  top: -5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.bookmark-tab:hover:not(.active) {
+  left: -5px !important;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
 }
 
 .bookmark-tab.active {
-  top: -5px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  left: 0 !important;
+  width: 100%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   z-index: 1000 !important;
-  transition: top 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+  transition: left 0.3s ease, box-shadow 0.3s ease, z-index 0s, width 0.3s ease;
+  padding: 4rem 5rem;
+  overflow-y: auto;
 }
 
 .bookmark-label {
@@ -264,6 +269,33 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transition: opacity 0.3s ease;
+}
+
+.bookmark-tab.active .bookmark-label {
+  display: none;
+}
+
+.bookmark-content {
+  display: none;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.bookmark-tab.active .bookmark-content {
+  display: block;
+}
+
+.bookmark-content h2 {
+  font-family: 'Crimson Text', 'Georgia', serif;
+  color: #f4e8d0;
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(244, 232, 208, 0.3);
+  padding-bottom: 0.5rem;
 }
 
 /* Bookmark panel */
@@ -306,20 +338,21 @@
 
 .bookmark-action {
   width: 100%;
-  background: #8b4513;
+  background: rgba(244, 232, 208, 0.2);
   color: #f4e8d0;
-  border: none;
+  border: 2px solid rgba(244, 232, 208, 0.4);
   padding: 0.75rem 1rem;
   font-family: 'Crimson Text', 'Georgia', serif;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 4px;
   margin-bottom: 1.5rem;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .bookmark-action:hover {
-  background: #704214;
+  background: rgba(244, 232, 208, 0.3);
+  border-color: rgba(244, 232, 208, 0.6);
 }
 
 .bookmark-list {
@@ -330,21 +363,21 @@
 
 .bookmark-item {
   padding: 1rem;
-  background: rgba(139, 115, 85, 0.08);
-  border-left: 3px solid #8b4513;
+  background: rgba(244, 232, 208, 0.1);
+  border-left: 3px solid rgba(244, 232, 208, 0.5);
   cursor: pointer;
   transition: all 0.3s ease;
   border-radius: 2px;
 }
 
 .bookmark-item:hover {
-  background: rgba(139, 115, 85, 0.15);
-  transform: translateX(-4px);
+  background: rgba(244, 232, 208, 0.2);
+  transform: translateX(4px);
 }
 
 .bookmark-title {
   font-family: 'Crimson Text', 'Georgia', serif;
-  color: #2a1f17;
+  color: #f4e8d0;
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
@@ -352,14 +385,14 @@
 
 .bookmark-date {
   font-family: 'Crimson Text', 'Georgia', serif;
-  color: rgba(62, 49, 37, 0.6);
+  color: rgba(244, 232, 208, 0.7);
   font-size: 0.85rem;
   font-style: italic;
 }
 
 .empty-message {
   font-family: 'Crimson Text', 'Georgia', serif;
-  color: rgba(62, 49, 37, 0.5);
+  color: rgba(244, 232, 208, 0.6);
   font-style: italic;
   text-align: center;
   margin-top: 2rem;
