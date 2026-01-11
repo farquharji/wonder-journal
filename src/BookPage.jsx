@@ -92,9 +92,10 @@ const BookPage = () => {
     }
   };
 
-  const handleBookmarkClick = (tabId) => {
+  const handleBookmarkClick = (e, tabId) => {
+    e.stopPropagation();
     console.log('Bookmark clicked:', tabId, 'Current active:', activeBookmark);
-    setActiveBookmark(activeBookmark === tabId ? null : tabId);
+    setActiveBookmark(prev => prev === tabId ? null : tabId);
   };
 
   const addBookmark = () => {
@@ -198,9 +199,9 @@ const BookPage = () => {
               style={{
                 backgroundColor: tab.color,
                 left: `${100 + (index * 130)}px`,
-                zIndex: activeBookmark === tab.id ? 1000 : 5 - index
+                zIndex: activeBookmark === tab.id ? 1000 : 10 + index
               }}
-              onClick={() => handleBookmarkClick(tab.id)}
+              onClick={(e) => handleBookmarkClick(e, tab.id)}
             >
               <span className="bookmark-label">{tab.label}</span>
             </div>
