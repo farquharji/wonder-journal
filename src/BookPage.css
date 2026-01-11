@@ -134,7 +134,28 @@
   margin-bottom: 1rem;
   font-family: 'Crimson Text', 'Georgia', serif;
   color: #3e3125;
-  opacity: 1;
+}
+
+.ink-emerge {
+  animation: inkEmerge 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes inkEmerge {
+  0% {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(4px);
+  }
+  50% {
+    opacity: 0.7;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
 }
 
 .ink-line-title {
@@ -206,9 +227,8 @@
 
 .bookmark-tab {
   width: 100px;
-  height: 100%;
+  height: 200px;
   position: absolute;
-  top: 0;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   cursor: pointer;

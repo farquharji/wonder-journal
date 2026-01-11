@@ -36,22 +36,18 @@ const BookPage = () => {
     e.preventDefault();
     if (!question.trim()) return;
 
-    console.log('Submitting question:', question);
     setIsThinking(true);
 
     const thinkingDuration = 400 + Math.random() * 300;
     await new Promise(resolve => setTimeout(resolve, thinkingDuration));
 
     try {
-      console.log('Fetching from /api/ask');
       const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
-      console.log('Response status:', response.status);
       const data = await response.json();
-      console.log('Received data:', data);
 
       const newEntry = {
         id: Date.now(),
@@ -90,13 +86,6 @@ const BookPage = () => {
 
       setIsThinking(false);
       setQuestion('');
-
-      // Scroll to bottom
-      setTimeout(() => {
-        if (contentRef.current) {
-          contentRef.current.scrollTop = contentRef.current.scrollHeight;
-        }
-      }, 100);
     } catch (error) {
       console.error('Error:', error);
       setIsThinking(false);
@@ -162,15 +151,33 @@ const BookPage = () => {
           {entries.length > 0 ? (
             entries.map((entry, idx) => (
               <div key={entry.id} id={`entry-${entry.id}`} className="entry-content">
-                <div className="ink-line ink-line-title">{entry.title}</div>
+                <div className="ink-line ink-line-title ink-emerge">{entry.title}</div>
                 {entry.explanation?.map((text, i) => (
-                  <div key={i} className="ink-line ink-line-explanation">{text}</div>
+                  <div
+                    key={i}
+                    className="ink-line ink-line-explanation ink-emerge"
+                    style={{ animationDelay: `${0.6 + (i * 0.3)}s` }}
+                  >
+                    {text}
+                  </div>
                 ))}
                 {entry.practicalGuidance?.map((text, i) => (
-                  <div key={i} className="ink-line ink-line-guidance">{text}</div>
+                  <div
+                    key={i}
+                    className="ink-line ink-line-guidance ink-emerge"
+                    style={{ animationDelay: `${0.6 + (entry.explanation?.length || 0) * 0.3 + (i * 0.3)}s` }}
+                  >
+                    {text}
+                  </div>
                 ))}
                 {entry.notes?.map((text, i) => (
-                  <div key={i} className="ink-line ink-line-note">{text}</div>
+                  <div
+                    key={i}
+                    className="ink-line ink-line-note ink-emerge"
+                    style={{ animationDelay: `${0.6 + ((entry.explanation?.length || 0) + (entry.practicalGuidance?.length || 0)) * 0.3 + (i * 0.3)}s` }}
+                  >
+                    {text}
+                  </div>
                 ))}
               </div>
             ))
@@ -189,7 +196,8 @@ const BookPage = () => {
               className={`bookmark-tab ${activeBookmark === tab.id ? 'active' : ''}`}
               style={{
                 backgroundColor: tab.color,
-                left: `${-80 + (index * 15)}px`,
+                left: `${-70 + (index * 12)}px`,
+                top: `${20 + (index * 18)}%`,
                 zIndex: activeBookmark === tab.id ? 1000 : index
               }}
               onClick={() => handleBookmarkClick(tab.id)}
