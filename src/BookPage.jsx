@@ -36,18 +36,22 @@ const BookPage = () => {
     e.preventDefault();
     if (!question.trim()) return;
 
+    console.log('Submitting question:', question);
     setIsThinking(true);
 
     const thinkingDuration = 400 + Math.random() * 300;
     await new Promise(resolve => setTimeout(resolve, thinkingDuration));
 
     try {
+      console.log('Fetching from /api/ask');
       const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Received data:', data);
 
       const newEntry = {
         id: Date.now(),
@@ -155,22 +159,26 @@ const BookPage = () => {
             </div>
           )}
 
-          {entries.map((entry, idx) => (
-            <div key={entry.id} id={`entry-${entry.id}`} className="entry-content">
-              <div className="ink-line ink-line-title">{entry.title}</div>
-              {entry.explanation?.map((text, i) => (
-                <div key={i} className="ink-line ink-line-explanation">{text}</div>
-              ))}
-              {entry.practicalGuidance?.map((text, i) => (
-                <div key={i} className="ink-line ink-line-guidance">{text}</div>
-              ))}
-              {entry.notes?.map((text, i) => (
-                <div key={i} className="ink-line ink-line-note">{text}</div>
-              ))}
-            </div>
-          ))}
+          {entries.length > 0 ? (
+            entries.map((entry, idx) => (
+              <div key={entry.id} id={`entry-${entry.id}`} className="entry-content">
+                <div className="ink-line ink-line-title">{entry.title}</div>
+                {entry.explanation?.map((text, i) => (
+                  <div key={i} className="ink-line ink-line-explanation">{text}</div>
+                ))}
+                {entry.practicalGuidance?.map((text, i) => (
+                  <div key={i} className="ink-line ink-line-guidance">{text}</div>
+                ))}
+                {entry.notes?.map((text, i) => (
+                  <div key={i} className="ink-line ink-line-note">{text}</div>
+                ))}
+              </div>
+            ))
+          ) : (
+            !isThinking && <div className="empty-message" style={{marginTop: '3rem'}}>Your answers will appear here...</div>
+          )}
 
-          <div className="word-counter">{totalWords} / 10,000 words</div>
+          <div className="word-counter">{totalWords} / 10,000 words | {entries.length} entries</div>
         </div>
 
         {/* Bookmark tabs */}
