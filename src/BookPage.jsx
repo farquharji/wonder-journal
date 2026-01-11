@@ -198,12 +198,16 @@ const BookPage = () => {
               className={`bookmark-tab ${activeBookmark === tab.id ? 'active' : ''}`}
               style={{
                 backgroundColor: tab.color,
-                left: activeBookmark === tab.id ? '0' : `${-80 + (index * 15)}px`,
                 zIndex: activeBookmark === tab.id ? 1000 : index
               }}
-              onClick={(e) => handleBookmarkClick(e, tab.id)}
             >
-              <span className="bookmark-label">{tab.label}</span>
+              <span
+                className="bookmark-label"
+                style={{ left: `${100 + (index * 110)}px` }}
+                onClick={(e) => handleBookmarkClick(e, tab.id)}
+              >
+                {tab.label}
+              </span>
 
               <div className="bookmark-content">
                 {tab.id === 'bookmarks' && (
