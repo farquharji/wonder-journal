@@ -181,8 +181,8 @@ const BookPage = () => {
               className={`bookmark-tab ${activeBookmark === tab.id ? 'active' : ''}`}
               style={{
                 backgroundColor: tab.color,
-                right: `${index * 20}px`,
-                zIndex: activeBookmark === tab.id ? 1000 : 100 - index
+                left: `${-80 + (index * 15)}px`,
+                zIndex: activeBookmark === tab.id ? 1000 : index
               }}
               onClick={() => handleBookmarkClick(tab.id)}
             >
