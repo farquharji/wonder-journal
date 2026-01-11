@@ -3,8 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  padding: 4rem 2rem 2rem 2rem;
   background: linear-gradient(135deg, #8b7355 0%, #6b5344 100%);
   position: relative;
 }
@@ -15,6 +14,7 @@
   gap: 10px;
   margin-bottom: -2px;
   z-index: 100;
+  position: relative;
 }
 
 .tab {
@@ -56,7 +56,7 @@
 .book-page {
   width: 100%;
   max-width: 900px;
-  height: 85vh;
+  height: 80vh;
   background-color: #f4e8d0;
   background-image:
     repeating-linear-gradient(
@@ -72,8 +72,7 @@
     0 8px 16px rgba(0, 0, 0, 0.1),
     inset 0 0 100px rgba(139, 115, 85, 0.1);
   border-radius: 2px;
-  position: absolute;
-  top: 100px;
+  position: relative;
   display: none;
   overflow: hidden;
 }
