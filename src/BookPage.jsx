@@ -5,12 +5,12 @@ const BookPage = () => {
   const [question, setQuestion] = useState('');
   const [entries, setEntries] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
-  const [activeBookmark, setActiveBookmark] = useState(null);
+  const [activeTab, setActiveTab] = useState('main');
   const [bookmarks, setBookmarks] = useState([]);
   const [totalWords, setTotalWords] = useState(0);
   const contentRef = useRef(null);
 
-  const bookmarkTabs = [
+  const tabs = [
     { id: 'bookmarks', label: 'Bookmarks', color: '#8b4513' },
     { id: 'library', label: 'Library', color: '#654321' },
     { id: 'bookshop', label: 'Bookshop', color: '#704214' },
@@ -64,7 +64,6 @@ const BookPage = () => {
         const updated = [...prev, newEntry];
         const totalWords = getTotalWordCount(updated);
 
-        // Remove old entries if over 10,000 words (but keep bookmarked ones)
         if (totalWords > 10000) {
           const bookmarkedIds = bookmarks.map(b => b.entryId);
           let currentWords = totalWords;
@@ -92,24 +91,15 @@ const BookPage = () => {
     }
   };
 
-  const handleBookmarkClick = (e, tabId) => {
-    e.stopPropagation();
-    console.log('Bookmark clicked:', tabId, 'Current active:', activeBookmark);
-    setActiveBookmark(prev => prev === tabId ? null : tabId);
-  };
-
   const addBookmark = () => {
     if (entries.length === 0) return;
-
     const lastEntry = entries[entries.length - 1];
     const bookmark = {
       id: Date.now(),
       entryId: lastEntry.id,
       title: lastEntry.question,
       timestamp: new Date(),
-      scrollPosition: contentRef.current?.scrollTop || 0
     };
-
     setBookmarks(prev => [...prev, bookmark]);
   };
 
@@ -122,7 +112,7 @@ const BookPage = () => {
         behavior: 'smooth'
       });
     }
-    setActiveBookmark(null);
+    setActiveTab('main');
   };
 
   useEffect(() => {
@@ -131,7 +121,28 @@ const BookPage = () => {
 
   return (
     <div className="book-container">
-      <div className="book-page">
+      {/* Tab Strip */}
+      <div className="tab-strip">
+        <div
+          className={`tab main-tab ${activeTab === 'main' ? 'active' : ''}`}
+          onClick={() => setActiveTab('main')}
+        >
+          Main
+        </div>
+        {tabs.map((tab, index) => (
+          <div
+            key={tab.id}
+            className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+            style={{ backgroundColor: tab.color }}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </div>
+        ))}
+      </div>
+
+      {/* Main Page */}
+      <div className={`book-page ${activeTab === 'main' ? 'active' : ''}`}>
         <div className="page-content" ref={contentRef}>
           <form onSubmit={handleSubmit} className="question-form">
             <input
@@ -151,33 +162,21 @@ const BookPage = () => {
           )}
 
           {entries.length > 0 ? (
-            entries.map((entry, idx) => (
+            entries.map((entry) => (
               <div key={entry.id} id={`entry-${entry.id}`} className="entry-content">
                 <div className="ink-line ink-line-title ink-emerge">{entry.title}</div>
                 {entry.explanation?.map((text, i) => (
-                  <div
-                    key={i}
-                    className="ink-line ink-line-explanation ink-emerge"
-                    style={{ animationDelay: `${0.6 + (i * 0.3)}s` }}
-                  >
+                  <div key={i} className="ink-line ink-line-explanation ink-emerge" style={{ animationDelay: `${0.6 + (i * 0.3)}s` }}>
                     {text}
                   </div>
                 ))}
                 {entry.practicalGuidance?.map((text, i) => (
-                  <div
-                    key={i}
-                    className="ink-line ink-line-guidance ink-emerge"
-                    style={{ animationDelay: `${0.6 + (entry.explanation?.length || 0) * 0.3 + (i * 0.3)}s` }}
-                  >
+                  <div key={i} className="ink-line ink-line-guidance ink-emerge" style={{ animationDelay: `${0.6 + (entry.explanation?.length || 0) * 0.3 + (i * 0.3)}s` }}>
                     {text}
                   </div>
                 ))}
                 {entry.notes?.map((text, i) => (
-                  <div
-                    key={i}
-                    className="ink-line ink-line-note ink-emerge"
-                    style={{ animationDelay: `${0.6 + ((entry.explanation?.length || 0) + (entry.practicalGuidance?.length || 0)) * 0.3 + (i * 0.3)}s` }}
-                  >
+                  <div key={i} className="ink-line ink-line-note ink-emerge" style={{ animationDelay: `${0.6 + ((entry.explanation?.length || 0) + (entry.practicalGuidance?.length || 0)) * 0.3 + (i * 0.3)}s` }}>
                     {text}
                   </div>
                 ))}
@@ -189,86 +188,67 @@ const BookPage = () => {
 
           <div className="word-counter">{totalWords} / 10,000 words | {entries.length} entries</div>
         </div>
-
-        {/* Bookmark tabs */}
-        <div className="bookmark-tabs">
-          {bookmarkTabs.map((tab, index) => (
-            <div
-              key={tab.id}
-              className={`bookmark-tab ${activeBookmark === tab.id ? 'active' : ''}`}
-              style={{
-                backgroundColor: tab.color,
-                zIndex: activeBookmark === tab.id ? 1000 : index
-              }}
-            >
-              <span
-                className="bookmark-label"
-                style={{ left: `${100 + (index * 110)}px` }}
-                onClick={(e) => handleBookmarkClick(e, tab.id)}
-              >
-                {tab.label}
-              </span>
-
-              <div className="bookmark-content">
-                {tab.id === 'bookmarks' && (
-                  <>
-                    <h2>Bookmarks</h2>
-                    <button onClick={addBookmark} className="bookmark-action">
-                      Bookmark Current Page
-                    </button>
-                    <div className="bookmark-list">
-                      {bookmarks.length === 0 ? (
-                        <p className="empty-message">No bookmarks yet</p>
-                      ) : (
-                        bookmarks.map(bookmark => (
-                          <div
-                            key={bookmark.id}
-                            className="bookmark-item"
-                            onClick={() => scrollToBookmark(bookmark)}
-                          >
-                            <div className="bookmark-title">{bookmark.title}</div>
-                            <div className="bookmark-date">
-                              {bookmark.timestamp.toLocaleDateString()}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {tab.id === 'library' && (
-                  <>
-                    <h2>Library</h2>
-                    <p className="empty-message">Your personal collection of books</p>
-                  </>
-                )}
-
-                {tab.id === 'bookshop' && (
-                  <>
-                    <h2>Bookshop</h2>
-                    <p className="empty-message">Browse and purchase books</p>
-                  </>
-                )}
-
-                {tab.id === 'journal' && (
-                  <>
-                    <h2>Journal</h2>
-                    <p className="empty-message">Reflect on your thoughts and writings</p>
-                  </>
-                )}
-
-                {tab.id === 'letters' && (
-                  <>
-                    <h2>Letters</h2>
-                    <p className="empty-message">Private, ephemeral correspondence</p>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
+
+      {/* Bookmark Pages */}
+      {tabs.map((tab) => (
+        <div
+          key={tab.id}
+          className={`book-page bookmark-page ${activeTab === tab.id ? 'active' : ''}`}
+          style={{ backgroundColor: tab.color }}
+        >
+          <div className="page-content">
+            {tab.id === 'bookmarks' && (
+              <>
+                <h2>Bookmarks</h2>
+                <button onClick={addBookmark} className="bookmark-action">
+                  Bookmark Current Page
+                </button>
+                <div className="bookmark-list">
+                  {bookmarks.length === 0 ? (
+                    <p className="empty-message">No bookmarks yet</p>
+                  ) : (
+                    bookmarks.map(bookmark => (
+                      <div key={bookmark.id} className="bookmark-item" onClick={() => scrollToBookmark(bookmark)}>
+                        <div className="bookmark-title">{bookmark.title}</div>
+                        <div className="bookmark-date">{bookmark.timestamp.toLocaleDateString()}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+
+            {tab.id === 'library' && (
+              <>
+                <h2>Library</h2>
+                <p className="empty-message">Your personal collection of books</p>
+              </>
+            )}
+
+            {tab.id === 'bookshop' && (
+              <>
+                <h2>Bookshop</h2>
+                <p className="empty-message">Browse and purchase books</p>
+              </>
+            )}
+
+            {tab.id === 'journal' && (
+              <>
+                <h2>Journal</h2>
+                <p className="empty-message">Reflect on your thoughts and writings</p>
+              </>
+            )}
+
+            {tab.id === 'letters' && (
+              <>
+                <h2>Letters</h2>
+                <p className="empty-message">Private, ephemeral correspondence</p>
+              </>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
